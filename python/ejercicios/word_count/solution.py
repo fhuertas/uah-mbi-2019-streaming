@@ -27,7 +27,9 @@ def main():
                 print("Consumer error: {}".format(msg.error()))
 
         elif msg:
-            p.produce('ejercicio2-destino', str(word_count(msg.value().decode('utf-8'))))
+            result = word_count(msg.value().decode('utf-8'))
+            print(f'Existen {result} palabras en la frase: "{str(msg.value()[:40],"utf-8")}"')
+            p.produce('ejercicio2-destino', str(result))
 
 
 if __name__ == "__main__":
