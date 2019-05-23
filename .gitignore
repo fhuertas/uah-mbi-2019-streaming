@@ -1,0 +1,15 @@
+# IntelliJ files
+
+.idea
+python/env
+env-*
+# Python temporal files
+__pycache__
+*.egg-info
+*.pyc
+.coverage
+
+# package files
+dist
+build
+target
