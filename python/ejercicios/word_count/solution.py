@@ -1,6 +1,7 @@
 from confluent_kafka import Producer, Consumer, KafkaError
 import time
 import re
+import sys
 
 
 def word_count(text):
@@ -8,14 +9,22 @@ def word_count(text):
 
 
 def main():
+    print(len(sys.argv))
+    origen = 'origen' if len(sys.argv) < 2 else sys.argv[1]
+    destino = 'destino' if len(sys.argv) < 3 else sys.argv[2]
+
+    # Configuracion producer
     p = Producer({'bootstrap.servers': 'localhost:9092'})
+    # Configuracion del consumidor
     c = Consumer({
         'bootstrap.servers': 'localhost:9092',
         'group.id': round(time.time() * 1000),
         'auto.offset.reset': 'earliest'
     })
 
-    c.subscribe(['ejercicio2-origen'])
+    print(f'Subscrito al canal {origen} y Produciendo en el canal {destino}')
+
+    c.subscribe([origen])
 
     while True:
         msg = c.poll(1.0)
@@ -28,8 +37,8 @@ def main():
 
         elif msg:
             result = word_count(msg.value().decode('utf-8'))
-            print(f'Existen {result} palabras en la frase: "{str(msg.value()[:40],"utf-8")}"')
-            p.produce('ejercicio2-destino', str(result))
+            print(f'Existen {result} palabras en la frase: "{str(msg.value()[:40], "utf-8")}"')
+            p.produce(destino, str(result))
 
 
 if __name__ == "__main__":
