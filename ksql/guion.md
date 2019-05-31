@@ -52,40 +52,49 @@ ksql-datagen quickstart=users format=json topic=users maxInterval=100
 
 ### Operaciones sobre Topics
 
-```
-# Desde la consola 1
-show topics; -- Muestra todos los topics
-print "users"; -- Consumidor del topic
+```sql
+-- En la consola de KSQL
+
+-- Muestra todos los topics
+show topics; 
+-- Consumidor del topic
+print "users"; 
 
 ```
 
 ### Operaciones básicas sobre Streams
 
-```
-SHOW STREAMS; -- Muestra los streams del servidor ksql
+```sql
+-- Muestra los streams del servidor ksql
+SHOW STREAMS; 
 
 CREATE STREAM pageviews_original (viewtime bigint, userid varchar, pageid varchar) WITH \
-  (kafka_topic='pageviews', value_format='DELIMITED'); -- Crea un stream
+-- Crea un stream  
+(kafka_topic='pageviews', value_format='DELIMITED'); 
 
-DROP STREAM pageviews_original; -- Borra un stream
+-- Borra un stream
+DROP STREAM pageviews_original; 
 ```
 
 
 ### Operaciones básicas sobre Tablas
 
-```
-SHOW TABLES; -- Muestra las tablas de ksql
+```sql
+-- Muestra las tablas de ksql
+SHOW TABLES; 
 
+-- Crea una tabla
 CREATE TABLE users_original (registertime BIGINT, gender VARCHAR, regionid VARCHAR, userid VARCHAR) WITH \
-  (kafka_topic='users', value_format='JSON', key = 'userid'); -- crea una tabla
+  (kafka_topic='users', value_format='JSON', key = 'userid');
 
+-- Elimina una tabla
 DROP TABLE users_original
 
 ```
 
 ### Consultas sobre tablas y streams
 
-```genericsql
+```sql
 -- Muestra las tres siguientes paginas visitadas
 SELECT pageid FROM pageviews_original LIMIT 3;  
 
@@ -129,7 +138,7 @@ CREATE TABLE visits_users
 
 ### Conslutas varias
 
-```genericsql
+```sql
 -- Muestra las queries que están activas
 SHOW QUERIES;
 
@@ -162,8 +171,7 @@ curl localhost:8081/schemas/ids/1
 
 ### Consultas
 
-```genericsql
-
+```sql
 CREATE STREAM ORDERS WITH (KAFKA_TOPIC='orders', VALUE_FORMAT='AVRO');
 
 
@@ -227,7 +235,7 @@ EOF
 
 ### Join stream-stream
 
-```genericsql
+```sql
 -- Nota: Para procesar los mensajes desde el principio de topic
 SET 'auto.offset.reset' = 'earliest';
 
@@ -250,7 +258,7 @@ SELECT O.ORDER_ID, O.TOTAL_AMOUNT, O.CUSTOMER_NAME,
 
 ### Join table-table
 
-```genericsql
+```sql
 
 CREATE TABLE WAREHOUSE_LOCATION (WAREHOUSE_ID INT, CITY VARCHAR, COUNTRY VARCHAR)
     WITH (KAFKA_TOPIC='warehouse_location',
@@ -282,7 +290,7 @@ ksql-datagen quickstart=orders format=avro topic=orders_local
 ksql-datagen quickstart=orders format=avro topic=orders_3rdparty
 ```
 
-```genericsql
+```sql
 CREATE STREAM ORDERS_SRC_LOCAL
   WITH (KAFKA_TOPIC='orders_local', VALUE_FORMAT='AVRO');
 
