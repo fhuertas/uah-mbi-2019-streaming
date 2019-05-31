@@ -68,9 +68,10 @@ print "users";
 -- Muestra los streams del servidor ksql
 SHOW STREAMS; 
 
-CREATE STREAM pageviews_original (viewtime bigint, userid varchar, pageid varchar) WITH \
 -- Crea un stream  
-(kafka_topic='pageviews', value_format='DELIMITED'); 
+CREATE STREAM pageviews_original 
+  (viewtime bigint, userid varchar, pageid varchar) 
+  WITH (kafka_topic='pageviews', value_format='DELIMITED'); 
 
 -- Borra un stream
 DROP STREAM pageviews_original; 
@@ -84,8 +85,12 @@ DROP STREAM pageviews_original;
 SHOW TABLES; 
 
 -- Crea una tabla
-CREATE TABLE users_original (registertime BIGINT, gender VARCHAR, regionid VARCHAR, userid VARCHAR) WITH \
-  (kafka_topic='users', value_format='JSON', key = 'userid');
+CREATE TABLE users_original (
+   registertime BIGINT, 
+   gender VARCHAR, 
+   regionid VARCHAR, 
+   userid VARCHAR) WITH
+     (kafka_topic='users', value_format='JSON', key = 'userid');
 
 -- Elimina una tabla
 DROP TABLE users_original
@@ -240,8 +245,9 @@ EOF
 SET 'auto.offset.reset' = 'earliest';
 
 -- steams implicados
-CREATE STREAM NEW_ORDERS (ORDER_ID INT, TOTAL_AMOUNT DOUBLE, CUSTOMER_NAME VARCHAR)
- WITH (KAFKA_TOPIC='new_orders', VALUE_FORMAT='JSON');
+CREATE STREAM NEW_ORDERS 
+  (ORDER_ID INT, TOTAL_AMOUNT DOUBLE, CUSTOMER_NAME VARCHAR)
+  WITH (KAFKA_TOPIC='new_orders', VALUE_FORMAT='JSON');
  
 CREATE STREAM SHIPMENTS (ORDER_ID INT, SHIPMENT_ID INT, WAREHOUSE VARCHAR)
  WITH (KAFKA_TOPIC='shipments', VALUE_FORMAT='JSON');
@@ -260,7 +266,8 @@ SELECT O.ORDER_ID, O.TOTAL_AMOUNT, O.CUSTOMER_NAME,
 
 ```sql
 
-CREATE TABLE WAREHOUSE_LOCATION (WAREHOUSE_ID INT, CITY VARCHAR, COUNTRY VARCHAR)
+CREATE TABLE WAREHOUSE_LOCATION 
+  (WAREHOUSE_ID INT, CITY VARCHAR, COUNTRY VARCHAR)
     WITH (KAFKA_TOPIC='warehouse_location',
           VALUE_FORMAT='JSON',
           KEY='WAREHOUSE_ID');
