@@ -1,6 +1,5 @@
 package com.fhuertas.uah.mbi.kafka.streams
 
-import java.time.Duration
 import java.util.Properties
 import java.util.concurrent.TimeUnit
 
@@ -9,13 +8,12 @@ import com.fhuertas.uah.mbi.config.Configs._
 import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.kafka.streams.KafkaStreams
-import org.apache.kafka.streams.kstream.JoinWindows
 import org.apache.kafka.streams.scala.StreamsBuilder
 import org.apache.kafka.streams.scala.kstream._
 
 import scala.collection.JavaConverters._
 
-object Example2 extends App with LazyLogging {
+object WordCount extends App with LazyLogging {
 
   import org.apache.kafka.streams.scala.ImplicitConversions._
   import org.apache.kafka.streams.scala.Serdes._
@@ -29,41 +27,24 @@ object Example2 extends App with LazyLogging {
     p.putAll(kafkaConfig.asJava)
     p
   }
-  val inputTopic1 = "in1"
-  val inputTopic2 = "in2"
-  val outputTopic = "out"
+  val inputTopic  = config.getString(Ej3.input)
+  val outputTopic = config.getString(Ej3.output)
 
-  val builder = new StreamsBuilder()
+  logger.info(s"Word count exercise: Reading from $inputTopic. Result write to $outputTopic")
 
-  val stream: KStream[String, String] = builder
-    .stream[String, String](inputTopic1)
-    .map((_, value) ⇒ {
-      val split = value.split(",", 2)
-      (split.head, split.last)
-    })
+  val builder                            = new StreamsBuilder()
+  val textLines: KStream[String, String] = builder.stream[String, String](inputTopic)
 
-  val status = builder
-    .stream[String, String](inputTopic2)
-    .map((_, value) ⇒ {
-      val split = value.split(",", 2)
-      (split.head, split.last)
-    })
-    .groupByKey
-    .reduce((_, r) ⇒ r)
-
-  val output: KStream[String, String] = stream
-    .leftJoin(status)({
-      case (leftValue, rightValue) ⇒
-        println(s"""Left: "$leftValue", Right: "$rightValue"""")
-        println(rightValue)
-        s"$leftValue,$rightValue"
-    })
-//    }, JoinWindows.of(Duration.ofSeconds(30)))
+  val wordCounts: KTable[String, String] = textLines
+    .flatMapValues(textLine ⇒ textLine.toLowerCase.split("\\W+"))
+    .groupBy((_, word) ⇒ word)
+    .count()
+    .mapValues(count ⇒ count.toString)
 
   // Other lines example
   //  textLines.filter((_,value) => value.startsWith("ERROR:")).map((_,value) => ("ERROR", value.replaceFirst("ERROR:",""))).to("errors")
   //  textLines.filter((_,value) => value.startsWith("ERROR:")).mapValues(value => value.length.toString).to("length-errors")
-  output.to(outputTopic)
+  wordCounts.toStream.to(outputTopic)
   val streams: KafkaStreams = new KafkaStreams(builder.build(), properties)
 
   // Always (and unconditionally) clean local state prior to starting the processing topology.
