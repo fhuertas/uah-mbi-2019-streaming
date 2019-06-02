@@ -1,12 +1,15 @@
 # Ejercicios Python
 
+El código python se encuentra en la carpeta `python` dentro del repositorio.
+Los comandos explicados a continuación deben lanzarse desde esa carpeta 
+
 ## Spark
 
 ### Wordcount
 
 Localización `ejercicios/spark/word_count.py`
 
-Ejecución:
+Ejecución: 
 * Consola 1:
 ```bash
 $ nc -lk 9999
