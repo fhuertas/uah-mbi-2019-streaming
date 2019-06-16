@@ -46,3 +46,6 @@ apidocs
 
 # Mac filesystem
 .DS_Store
+
+# jupyter checkpoints
+.ipynb_checkpoints
