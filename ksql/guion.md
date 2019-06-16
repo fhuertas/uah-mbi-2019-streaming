@@ -42,7 +42,7 @@ ksql
 
 ```bash
 # Consola 2: Generador de visitas
-ksql-datagen quickstart=pageviews format=delimited topic=pageviews maxInterl=500
+ksql-datagen quickstart=pageviews format=delimited topic=pageviews maxInterval=500
 ```
 
 ```bash
