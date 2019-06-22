@@ -4,8 +4,8 @@ El objetivo de este ejercicio es practicar con la API de Consumer y Producer de 
 
 De una manera extremadamente simplificada, intentaremos modelar parte del comportamiendo del famoso Pokemo Go. La arquitectura tendrá los siguientes componentes:
 - Uno o varios generadores de Pokemons (pseudoaleatorio, cada pokémon aparecerá en una latitud/longitud cercana a dos puntos predefinidos).
-- Uno o varios generador de logins de usuarios.
-- Uno o varios contadores del número de usuarios que han iniciado sesión y de los pokemons que han aparecido.
+- Uno o varios generadores de logins de usuarios.
+- Uno o varios _dashboards_ con contadores del número de usuarios que han iniciado sesión y de los pokemons que han aparecido.
 - Uno o varios "controladores de autenticación" que manden un email a cada usuario cuando inicie sesión.
 - Varios paneles de control de usuario que verán los pokemons que aparecen cerca de su zona.
 - Kafka como desacoplador de los flujos de mensajes.
@@ -16,11 +16,11 @@ De una manera extremadamente simplificada, intentaremos modelar parte del compor
 4. El enunciado indica "uno o varios" para poder expresar que puede haber varias instancias o procesos de un mismo producer o consumer:
    1. ¿En qué casos disponer de varios procesos facilita la alta disponibilidad?
    2. ¿En qué casos es necesario disponer de varios procesos para permitir una funcionalidad concreta?
-5. ¿Cuántas particiones deberían tener los topics? ¿Cómo afecta esto al número de procesos que podemos desplegar?   
+5. ¿Qué ventajas e inconvenientes tendría usar una partición? ¿Y usar varias? ¿Cómo afecta esto al número de procesos que podemos desplegar?   
 6. ¿Cuántos Consumer Groups necesitaríamos?
 
 Y ahora a programar. Vamos a restringir  un poco más los requisitos para enfocar la implentación.
-- El generador de Pokemons debe escogerlos aleatoriamente del CSV y emitir un JSON con dos campos adicionales, `lat` y `lon`. Pueden aparecer repetidos.
+- El generador de Pokemons debe escogerlos aleatoriamente del CSV y emitir un JSON con dos campos adicionales, `lat` y `lon`. Pueden aparecer pokemons repetidos.
 - El generador de usuarios debe emitir eventos de login y logoff. Hay dos opciones:
   - Emitir el usuario entero en ambos eventos, con un campo de `action` que sea `login` y `logoff`.
   - Emitir el ID de usuario como clave, y como valor incluir el usuario completo para el `login` y emitir un valor `None` para el `logoff`.
