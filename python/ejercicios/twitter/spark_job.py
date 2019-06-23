@@ -1,7 +1,7 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
-
+import time
 # submit with --packages org.apache.spark:spark-streaming-kafka-0-10_2.11:2.4.3"
 spark = SparkSession \
     .builder \
@@ -27,7 +27,8 @@ msgs = spark \
     .select(col("value").cast("string"), col("timestamp")) \
     .withColumn("message", from_json("value", msgs_schema)) \
     .withColumn("user_id", col("message.user.id")) \
-    .drop("user")
+    .drop("user") \
+    .drop("value")
 
 users = spark.readStream.format("kafka") \
     .option("kafka.bootstrap.servers", "localhost:9092") \
@@ -36,9 +37,20 @@ users = spark.readStream.format("kafka") \
     .option("subscribe", "users") \
     .load() \
     .select(col("value").cast("string"), col("timestamp")) \
-    .withColumn("json", from_json("value", user_schema)).select("json.*") \
+    .withColumn("json", from_json("value", user_schema)).select("json.*")
 
 join = msgs.join(users, msgs.user_id == users.id)
 
-query = join.writeStream.outputMode("append").format("console").start()
+# Console
+# query = join.writeStream.outputMode("append").format("console").start()
+
+query = join\
+    .selectExpr("to_json(struct(*)) AS value") \
+    .writeStream \
+    .outputMode("append") \
+    .format("kafka") \
+    .option("kafka.bootstrap.servers", "localhost:9092") \
+    .option("topic", "join-topic") \
+    .option("checkpointLocation", f"/tmp/join-{time.time()}") \
+    .start()
 query.awaitTermination()

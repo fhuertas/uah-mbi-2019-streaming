@@ -1,7 +1,7 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
-
+import time
 spark = SparkSession \
     .builder \
     .appName("KafkaTweetsReader").getOrCreate()
@@ -26,5 +26,16 @@ msgs_grouped = msgs \
     .groupBy(window(msgs.timestamp, "10 seconds", "2 seconds"), msgs.user_id) \
     .count()
 
-query = msgs_grouped.writeStream.outputMode("complete").format("console").start()
+# Console
+# query = msgs_grouped.writeStream.outputMode("complete").format("console").start()
+
+query = msgs_grouped \
+    .selectExpr("to_json(struct(*)) AS value") \
+    .writeStream \
+    .outputMode("complete") \
+    .format("kafka") \
+    .option("kafka.bootstrap.servers", "localhost:9092") \
+    .option("topic", "grouped-topic") \
+    .option("checkpointLocation", f"/tmp/grouped-{time.time()}") \
+    .start()
 query.awaitTermination()
