@@ -1,0 +1,49 @@
+-- Las siguiente setencias de KSQL nos generan los streams, tablas y topics asociados que necesitamos para la rama de real-time.
+-- El stream house_sales es simplemente la representación del topic en el que produce nuestro house_sales_gen.
+-- El stream house_sales_by_decade transforma el stream actual para añadir la década, en vez de usar el valor del año directamente.
+-- Para calcular agregaciones debemos crear una tabla. Calculamos 2 estadísticos sencillos con una ventana de tipo "tumbling" (sin solape). Añadimos los campos de window_start y window_end para poder diferencias ventanas en el cliente del dashboard. KSQL crea un topic asociado a esta tabla así que podemos leerlo con un Consumer como cualquier otro topic.
+
+CREATE STREAM house_sales (price DOUBLE, yr_built BIGINT) WITH (KAFKA_TOPIC='houses', VALUE_FORMAT='JSON');
+
+CREATE STREAM house_sales_by_decade AS SELECT price, CAST(yr_built/10 AS BIGINT) * 10 AS decade_built FROM house_sales;
+
+CREATE TABLE avg_price_per_year WITH (VALUE_FORMAT='JSON') AS
+SELECT
+    decade_built,
+    SUM(price) / COUNT(price) AS avg_price,
+    COUNT(price) as num_houses,
+    WINDOWSTART() AS window_start,
+    WINDOWEND() AS window_end
+FROM house_sales_by_decade
+WINDOW TUMBLING (size 120 second)
+GROUP BY decade_built;
+
+-- Si necesitamos leer las tablas en el cliente de KSQL podemos usar los siguientes comandos. Recuperar una ventana ya terminada a posteriori no es trivial, pero consumir el topic en python facilitará las cosas.
+
+SET 'auto.offset.reset' = 'latest'; SELECT rowtime FROM avg_price_per_year LIMIT 1;
+SET 'auto.offset.reset' = 'earliest'; SELECT window_end FROM avg_price_per_year WHERE window_end < 1560238859705;
+SELECT decade_built, avg_price, num_houses FROM avg_price_per_year WHERE window_end = 1560238800000;
+
+SET 'auto.offset.reset' = 'earliest'; SELECT decade_built, avg_price, num_houses FROM avg_price_per_year WHERE window_start < 1560240023192 and window_end > 1560240023192;
+
+
+
+-- Si necesitamos ventanas con solape crearíamos la tabla con este comando. El código del dashboard se complicaría un poco, pero a cambios podríamos actualizar el dashboard más a menudo.
+
+CREATE TABLE avg_price_per_year WITH (VALUE_FORMAT='JSON') AS
+SELECT
+    decade_built,
+    SUM(price) / COUNT(price) AS avg_price,
+    COUNT(price) as num_houses,
+    WINDOWSTART() AS window_start,
+    WINDOWEND() AS window_end
+FROM house_sales_by_decade
+WINDOW HOPPING (SIZE 300 SECONDS, ADVANCE BY 60 SECONDS)
+GROUP BY decade_built;
+
+
+CREATE TABLE avg_price_per_year WITH (VALUE_FORMAT='JSON') AS
+SELECT yr_built, SUM(price) / COUNT(price) AS avg_price, COUNT(price) as num_houses, WINDOWSTART() AS window_start, WINDOWEND() AS window_end
+FROM house_sales
+
+GROUP BY yr_built;

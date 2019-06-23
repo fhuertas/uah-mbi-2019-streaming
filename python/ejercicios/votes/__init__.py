@@ -1,0 +1,4 @@
+TOPIC_VOTES = 'votes'
+TOPIC_VOTES_ENRICHED = 'VOTES_ENRICHED'
+SEED = 1
+DATA = 'votes.csv'
