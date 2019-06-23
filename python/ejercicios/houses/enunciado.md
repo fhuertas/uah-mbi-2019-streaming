@@ -10,11 +10,13 @@ Se espera obtener el esqueleto de un portal de compra-venta de viviendas con la 
 - Un procesador de streams que calcule, al vuelo, el precio medio por década de las casas vendidas en una ventana de tiempo.
 - Un dashboard que lea la última ventana y muestre los estadísticos que ha calculado el procesador de streams.
 
+## Diseño de la aplicación
 1. De los elementos anteriores, ¿cuáles serían consumers y cuáles serían producers?
 2. ¿Cuántos topics necesitaremos? ¿Necesitan clave? ¿Qué ventajas e inconvenientes tendría usar una partición? ¿Y usar varias?  ¿Cómo afecta esto al número de procesos que podemos desplegar? ¿Y Consumer Groups?
 3. ¿Cuántas streams y/o tablas necesitaremos?
 4. ¿Qué tipo de ventanas usaríamos en el procesado de streams?
 
+## Implementación
 Añadimos algunas restricciones más:
 - Obtendremos los datos a partir de [House Sales in King County](https://www.kaggle.com/harlfoxem/housesalesprediction). Un script nos dividirá el CSV original en varios ficheros separados: un histórico inicial, un pseudogenerador de ventas y un dataset sin precio final.
 - El generador de ventas escogerá elementos del CSV y emitirá un subconjunto de las columnas, incluido el precio. Se pueden repetir sin que por ello se vea afectado el sistema.
@@ -23,3 +25,19 @@ Añadimos algunas restricciones más:
 - El entrenador debe usar todos los datos de ventas producidos hasta el momento. El histórico dispondrá de datos antes de empezar a trabajar para tener una base sobre la que entrenar.
 - El generador de predicciones puede ser un script estático que devuelva un precio a partir de un ID de casa, sin necesidad de añadir complejidad extra como peticiones web o similares.
 - Las limitaciones de KSQL puede obligar a generar varias tablas cuando al principio parecía que una era suficiente. No hay que desesperar.
+
+## Cómo arrancar la aplicación
+Podemos regenerar los CSV a partir del dataset original con `build_datasets`, aunque se entregan unos CSV con los que trabajar. 
+
+Debemos arrancar el stack completo con `confluent start`, seguido del notebook `house_sales_gen` y el `batch_client`. A continuación, abrimos la consola de KSQL con `ksql` y creamos los streams y tablas con el código de `houses.ksql`. Una vez hayamos arrancado los streams podemos arrancar `dashboard`.
+
+La rama batch es independiente de Kafka y podemos ejecutar `model_trainer` y `model_predict` tantas veces necesitemos, incluso sin haber arrancado Kafka. Eso sí, para comprobar que los precios de `model_predict` cambiar deberemos reentrenar el modelo una vez hayan aparecido suficientes ventas en el stream.
+
+
+
+
+
+
+
+
+

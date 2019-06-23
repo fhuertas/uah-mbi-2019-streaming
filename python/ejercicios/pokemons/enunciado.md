@@ -10,6 +10,7 @@ De una manera extremadamente simplificada, intentaremos modelar parte del compor
 - Varios paneles de control de usuario que verán los pokemons que aparecen cerca de su zona.
 - Kafka como desacoplador de los flujos de mensajes.
 
+## Diseño de la aplicación
 1. De los elementos anteriores, ¿cuáles serían consumers y cuáles serían producers?
 2. ¿Cuántos topics necesitaríamos? ¿Necesitan una clave?
 3. ¿Sobre qué topics produciría cada producer, y de qué topics leería cada consumer.
@@ -19,6 +20,7 @@ De una manera extremadamente simplificada, intentaremos modelar parte del compor
 5. ¿Qué ventajas e inconvenientes tendría usar una partición? ¿Y usar varias? ¿Cómo afecta esto al número de procesos que podemos desplegar?   
 6. ¿Cuántos Consumer Groups necesitaríamos?
 
+## Implementación
 Y ahora a programar. Vamos a restringir  un poco más los requisitos para enfocar la implentación.
 - El generador de Pokemons debe escogerlos aleatoriamente del CSV y emitir un JSON con dos campos adicionales, `lat` y `lon`. Pueden aparecer pokemons repetidos.
 - El generador de usuarios debe emitir eventos de login y logoff. Hay dos opciones:
@@ -36,3 +38,16 @@ kafka-topics --list --zookeeper localhost
 kafka-console-consumer --bootstrap-server localhost:9092 --topic users --from-beginning
 kafka-topics --zookeeper localhost --topic users --alter --partitions 2
 ```
+
+## Cómo arrancar la aplicación
+Debemos arrancar Kafka con `confluent start kafka`, seguido del notebook `pokemon_gen` y el `user_gen`. Después podemos arrancar `login-checker`, `dashboard` y `control-panel` en el orden que queramos. `login-checker` y `control-panel` están preparado para arrancar varias instancias simplemente duplicando el script.
+
+
+
+
+
+
+
+
+
+

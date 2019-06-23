@@ -13,3 +13,7 @@ COORDINATES = {
     'GAUSS_LAT_SEGOVIA': {'mu': 40.95, 'sigma': 0.1},
     'GAUSS_LON_SEGOVIA': {'mu': -4.12, 'sigma': 0.2}
 }
+
+MEAN_INTERVAL = 3
+MEAN_LOGIN = 5
+NUM_USERS = 5
