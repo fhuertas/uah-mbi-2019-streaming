@@ -1,10 +1,11 @@
 """Collector.
 
 The secrets vars needed are:
- * secrets.YOUR_CONSUMER_KEY
- * secrets.YOUR_CONSUMER_SECRET
- * secrets.YOUR_ACCESS_TOKEN
- * secrets.YOUR_ACCESS_SECRET
+secrets:
+  CONSUMER_KEY: "***********"
+  CONSUMER_SECRET: "*******"
+  ACCESS_TOKEN: "***********"
+  ACCESS_SECRET: "*********"
 
 Usage:
   collector.py  --bootstrap-server=<server> --hashtag=<hashtag> --secrets-file=<secret-file> --topic-messages=<msgs-topic> --topic-users=<users-topic>
