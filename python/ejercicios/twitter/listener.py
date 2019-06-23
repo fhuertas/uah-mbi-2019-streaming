@@ -13,10 +13,9 @@ class MyListener(StreamListener):
     def on_data(self, data):
         try:
             json_data = json.loads(data)
+            user = json_data['user']
             self.sender_msg.send(data)
-            user = self.api.lookup_users([json_data['user']['id']])
-            for u in user:
-                self.sender_user.send(json.dumps(u._json))
+            self.sender_user.send(json.dumps(user))
 
             return True
         except BaseException as e:

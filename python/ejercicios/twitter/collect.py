@@ -21,11 +21,11 @@ Options:
 import tweepy
 import yaml
 from docopt import docopt
-from ejercicios.tweeter.kafka_sender import KafkaSender
-from ejercicios.tweeter.string_sender import StringSender
-from ejercicios.tweeter.listener import MyListener
 from tweepy import OAuthHandler
 from tweepy import Stream
+
+from ejercicios.twitter.kafka_sender import KafkaSender
+from ejercicios.twitter.listener import MyListener
 
 
 def main(args):

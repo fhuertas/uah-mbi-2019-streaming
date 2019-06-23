@@ -2,6 +2,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
 
+# submit with --packages org.apache.spark:spark-streaming-kafka-0-10_2.11:2.4.3"
 spark = SparkSession \
     .builder \
     .appName("KafkaTweetsReader").getOrCreate()
