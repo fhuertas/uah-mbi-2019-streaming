@@ -7,7 +7,10 @@ def read(fname):
 
 
 required = [
-    'confluent-kafka~=1.0.0'
+    'confluent-kafka~=1.0.0',
+    'tweepy~=3.7.0',
+    'docopt~=0.6.2',
+    'PyYAML~=5.1.1'
 ]
 
 setup(name='ejercicios_python',
