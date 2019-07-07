@@ -5,7 +5,8 @@ datos en un topic de kafka (samples). Los sensores se pueden monitorizar o no, p
 en un topic de kafka si queremos que esten monitorizados (topic sondas). 
 
 El ejercicio consiste en, mediante KSQL, crear un topic con la información de las sondas monitorizadas.
-Formato de salida debe ser avro  
+El formato de salida debe ser avro (puedes hacer las pruebas usando json si es más cómodo, 
+pero el formato final debe ser avro  
 
 #### Generador de datos sondas
 
