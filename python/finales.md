@@ -52,7 +52,7 @@ Se pide hacer un wordcount en spark structured streaming con las siguientes cond
 
 En este ejercicio se pide volcar los resultados del ejercicio 1 en una tabla sqlite.
 
-El entregable es el json que al crear la tarea en el servidor de kafka connect. En el control center 
+El entregable es el json de configuración que aparece en la interfaz web al crear la tarea en el servidor de kafka connect. En el control center 
 se muestra antes de crear el conector
 
 ![imgs/ksql.png](imgs/ksql.png)
