@@ -37,7 +37,8 @@ users = spark.readStream.format("kafka") \
     .option("subscribe", "users") \
     .load() \
     .select(col("value").cast("string"), col("timestamp")) \
-    .withColumn("json", from_json("value", user_schema)).select("json.*")
+    .withColumn("json", from_json("value", user_schema))\
+    .select("json.*")
 
 join = msgs.join(users, msgs.user_id == users.id)
 
@@ -53,4 +54,5 @@ query = join\
     .option("topic", "join-topic") \
     .option("checkpointLocation", f"/tmp/join-{time.time()}") \
     .start()
+
 query.awaitTermination()
