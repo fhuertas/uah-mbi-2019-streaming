@@ -10,11 +10,23 @@ pero el formato final debe ser avro
 
 #### Generador de datos sondas
 
-Generador de datos de las sondas
+##### Ejecutar
+
+Las instruciones para ejecutar el generador son las siguientes:
+
+1) En primer lugar activar el entorno
 ```bash
 source env/bin/activate
-python -m ejercicios/final_1/gen_samples.py -b localhost:9092 -t samples -c 1.5 -n 10
 ```
+
+2) A continuación, ejecutar uno de los siguiente comandos 
+
+```bash
+python ejercicios/final_1/gen_sondas.py -b localhost:9092 -t samples -c 1.5 -n 10
+python -m ejercicios.final_1.gen_sondas -b localhost:9092 -t samples -c 1.5 -n 10
+```
+
+##### Información
 
 Canal de publicación: **samples**
 
@@ -28,12 +40,22 @@ Formato de los mensajes de topic
 
 #### Generador de estado de las sondas. 
 
-Comando para ejecutar los datos de sondas actuivas
+##### Ejecutar
 
+Las instruciones para ejecutar el generador son las siguientes:
+
+1) En primer lugar activar el entorno
 ```bash
 source env/bin/activate
-python -m ejercicios/final_1/gen_sondas.py -b localhost:9092 -t sondas -c 1.5 -n 10 -H 0.9
 ```
+2) A continuación, ejecutar uno de los siguiente comandos 
+
+```bash
+python ejercicios/final_1/gen_samples.py -b localhost:9092 -t sondas -c 1.5 -n 10 -H 0.9
+python -m ejercicios.final_1.gen_samples -b localhost:9092 -t sondas -c 1.5 -n 10 -H 0.9
+```
+
+##### Información
 
 Topic: **sondas**
 
